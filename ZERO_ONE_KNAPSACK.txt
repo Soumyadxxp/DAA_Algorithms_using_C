@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int main() {
+    int n, W;
+
+    printf("Enter number of items: ");
+    scanf("%d", &n);
+
+    int weights[n], profits[n];
+
+    printf("Enter weights of items:\n");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &weights[i]);
+
+    printf("Enter profits of items:\n");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &profits[i]);
+
+    printf("Enter capacity of knapsack: ");
+    scanf("%d", &W);
+
+    int dp[n + 1][W + 1];
+
+    clock_t start = clock();
+
+    // Initialize DP table
+    for (int i = 0; i <= n; i++)
+        for (int w = 0; w <= W; w++)
+            dp[i][w] = 0;
+
+    // Build table dp[][] in bottom up manner
+    for (int i = 1; i <= n; i++) {
+        for (int w = 0; w <= W; w++) {
+            if (weights[i - 1] <= w)
+                dp[i][w] = max(profits[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);
+            else
+                dp[i][w] = dp[i - 1][w];
+        }
+    }
+
+    clock_t end = clock();
+    double cpu_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+    // Output total profit
+    int total_profit = dp[n][W];
+    printf("\nMaximum Profit: %d\n", total_profit);
+
+    // Find selected items
+    int selected[n];
+    int i = n, w = W, count = 0;
+
+    while (i > 0 && w >= 0) {
+        if (dp[i][w] != dp[i - 1][w]) {
+            selected[count++] = i - 1;
+            w -= weights[i - 1];
+        }
+        i--;
+    }
+
+    printf("Selected Items (index, weight, profit):\n");
+    for (int j = count - 1; j >= 0; j--) {
+        int idx = selected[j];
+        printf("Item %d -> Weight: %d, Profit: %d\n", idx + 1, weights[idx], profits[idx]);
+    }
+
+    printf("\nSolution Vector (Selected Item Indexes): ");
+    for (int j = count - 1; j >= 0; j--)
+        printf("%d ", selected[j] + 1);
+    printf("\n");
+
+    printf("CPU Time: %.6f seconds\n", cpu_time);
+    printf("Time Complexity: O(nW) — where n = items, W = capacity\n");
+    printf("Space Complexity: O(nW) — full 2D table\n");
+
+    return 0;
+}
