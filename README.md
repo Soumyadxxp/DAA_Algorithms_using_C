@@ -58,7 +58,7 @@ This repository includes implementations of various algorithms using C. Each pro
 - Fibonacci
 - Tower of Hanoi
 - N-Queen Problem
-
+- 0/1 Knapsack
 ### Matrix Algorithms
 - Matrix Multiplication
 - Divide and Conquer Matrix Multiplication
